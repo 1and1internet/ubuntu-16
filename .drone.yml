@@ -1,0 +1,49 @@
+build:
+  build:
+    when:
+      event: push
+    image: 1and1internet/template-library-tools
+    pull: true
+    auth_config:
+      username: $$DOCKERHUB_USERNAME
+      password: $$DOCKERHUB_PASSWORD
+      email: $$DOCKERHUB_EMAIL
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - docker build --pull --no-cache -t dronebuild$DRONE_BUILD_NUMBER/${CI_REPO#*/} .
+  spectests:
+    image: 1and1internet/ubuntu-16-rspec:latest
+    privileged: false
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - export IMAGE=dronebuild$DRONE_BUILD_NUMBER/${CI_REPO#*/}
+      - mkdir ../drone-tests ; git clone https://github.com/1and1internet/drone-tests.git ../drone-tests
+      - pwd ; ls -l 
+      - ls -l ../
+      - rspec -f documentation spec/spec_helper.rb
+  publish:
+    when:
+      branch: master
+      event: push
+    image: 1and1internet/template-library-tools
+    auth_config:
+     username: $$DOCKERHUB_USERNAME
+     password: $$DOCKERHUB_PASSWORD
+     email: $$DOCKERHUB_EMAIL
+    privileged: true
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+     - DOCKERHUB_USERNAME=$$DOCKERHUB_USERNAME
+     - DOCKERHUB_EMAIL=$$DOCKERHUB_EMAIL
+     - DOCKERHUB_PASSWORD=$$DOCKERHUB_PASSWORD
+    commands:
+     - bash /scripts/publish.sh
+notify:
+  webhook:
+    urls:
+      - https://templateupdater.fasthosts.co.uk/hook
+

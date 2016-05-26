@@ -1,0 +1,6 @@
+version: '2'
+services:
+  ubuntu-16:
+    build: .
+    image: ubuntu-16
+    user: "1000000"

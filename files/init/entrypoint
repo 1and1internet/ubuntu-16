@@ -1,0 +1,83 @@
+#!/bin/bash
+
+die () {
+  echo "ERROR: ${1}"
+  exit 1
+}
+
+check_depending_env () {
+  if [ -n "${DEPENDING_ENVIRONMENT_VARS}" ]; then
+    MISSING_ENVIRONMENT_VARS=()
+    echo -n "* Checking depending environment variables "
+    for e in ${DEPENDING_ENVIRONMENT_VARS}; do
+      if [ ! -v "${e}" ]; then
+        MISSING_ENVIRONMENT_VARS+=("${e}")
+      fi
+    done
+    if [ ${#MISSING_ENVIRONMENT_VARS[@]} -gt 0 ]; then
+      echo "[missing variables]"
+      for missing in "${MISSING_ENVIRONMENT_VARS[@]}"; do
+        echo " * ${missing}"
+      done
+      echo
+      die "Missing environment variables"
+    fi
+    echo -n "[done]"
+    echo
+  fi
+}
+
+[[ ${DOCKER_DEBUG} ]] && set -x
+
+# Set exec-bit automatic. When adding hooks in a Dockerfile, we shoulnt also haveto think about setting +x
+# in the Dockerfile for the same file. If you want to disable a hook, rename it.
+chmod +x /init/setup /hooks/{entrypoint-pre.d/*,entrypoint-run,entrypoint-exec,supervisord-pre.d/*,supervisord-ready} 2> /dev/null || true
+
+entrypoint_pre=$(ls /hooks/entrypoint-pre.d/* 2>/dev/null | sort -n )
+if [ "$entrypoint_pre" != "" ]; then
+  for hook in $entrypoint_pre; do
+    echo "Executing hook ${hook}"
+    /bin/bash -c "${hook}"
+    if [ "$?" != "0" ]; then
+      die "hook ${hook}} returned a non-zero exit status '$?'"
+    fi
+  done
+fi
+
+[[ -f "/hooks/entrypoint-pre" ]] && echo "The /hooks/entrypoint-pre hook has been replaced with /hooks/entrypoint-pre.d/*" && exit 1
+
+[[ -f "/init/setup" ]] && /init/setup
+
+eval ${SETUP:-}
+
+# If the Dockerfile "USER" is sat, we cant do this trick
+#if [[ ${UID} == 0 ]]; then
+#  DUID=${DUID:-950}
+#  DGID=${DGID:-950}
+#  [[ $(id -u docker) == ${DUID} ]] || usermod -o -u ${DUID} docker
+#  [[ $(id -g docker) == ${DGID} ]] || groupmod -o -g ${DGID} docker
+#else
+#  if [[ ${DUID} || ${DGID} ]]; then
+#    echo "WARNING: You have sat DUID or DGID, but we are not able to change the userid because we are not UID 0 (root)."
+#    echo "DUID=${DUID}, DGID=${DGID}, we are $(id)"
+#   echo
+#  fi
+#fi
+
+case ${1} in
+  run)
+    check_depending_env
+    [[ -f "/hooks/entrypoint-run" ]] && /hooks/entrypoint-run
+    if [[ -e /init/supervisord && -d /etc/supervisor ]]; then
+      # Use exec so we replace our current process so signals can get through
+      exec /bin/bash /init/supervisord
+    else
+      echo "Something went wrong..."
+      /bin/bash
+    fi
+    ;;
+  *)
+    [[ -f "/hooks/entrypoint-exec" ]] && /hooks/entrypoint-exec
+    exec $*
+    ;;
+esac
