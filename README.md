@@ -1,6 +1,4 @@
-# docker-ubuntu-16
-
-Base Ubuntu Image
+Ubuntu 16 Base Image
 
 
 This image supports the following hooks:
@@ -11,6 +9,8 @@ This image supports the following hooks:
 /hooks/supervisord-pre.d/: Just before we fire up supervisord.
 
 /hooks/supervisord-ready: Runned after we know that supervisord is ready. This hook is triggered from supervisord itself, when it fires the SUPERVISOR_STATE_CHANGE_RUNNING event.
+
+
 
 
 
