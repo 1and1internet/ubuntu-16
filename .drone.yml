@@ -30,8 +30,10 @@ build:
      username: $$DOCKERHUB_USERNAME
      password: $$DOCKERHUB_PASSWORD
      email: $$DOCKERHUB_EMAIL
+    privileged: true
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
+     - /tmp/image-comparison:/tmp/image-comparison
     environment:
      - DOCKERHUB_USERNAME=$$DOCKERHUB_USERNAME
      - DOCKERHUB_EMAIL=$$DOCKERHUB_EMAIL
