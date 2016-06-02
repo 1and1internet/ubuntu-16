@@ -11,7 +11,5 @@ This image supports the following hooks:
 /hooks/supervisord-ready: Runned after we know that supervisord is ready. This hook is triggered from supervisord itself, when it fires the SUPERVISOR_STATE_CHANGE_RUNNING event.
 
 
-Preparing for live
-
 
 
