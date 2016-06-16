@@ -11,7 +11,7 @@ build:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - python3 /scripts/images/build.py
+      - python3 -u /scripts/images/build.py
   spectests:
     image: 1and1internet/ubuntu-16-rspec:latest
     pull: true
@@ -33,12 +33,15 @@ build:
      email: $$DOCKERHUB_EMAIL
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
-     - /tmp/image-comparison:/tmp/image-comparison
-    environment:
-     - DOCKERHUB_USERNAME=$$DOCKERHUB_USERNAME
-     - DOCKERHUB_EMAIL=$$DOCKERHUB_EMAIL
-     - DOCKERHUB_PASSWORD=$$DOCKERHUB_PASSWORD
-     - DEPENDENCY_GRAPH_URL=$$DEPENDENCY_GRAPH_URL
-     - BUILD_TRIGGER_API_URL=$$BUILD_TRIGGER_API_URL
+     - $$SHARED_BUILD_STORAGE:/tmp/image-comparison
+     environment:
+      - DOCKERHUB_USERNAME=$$DOCKERHUB_USERNAME
+      - DOCKERHUB_EMAIL=$$DOCKERHUB_EMAIL
+      - DOCKERHUB_PASSWORD=$$DOCKERHUB_PASSWORD
+      - DEPENDENCY_GRAPH_URL=$$DEPENDENCY_GRAPH_URL
++     - DEPENDENCY_GRAPH_USERNAME=$$DEPENDENCY_GRAPH_USERNAME
++     - DEPENDENCY_GRAPH_PASSWORD=$$DEPENDENCY_GRAPH_PASSWORD
+      - BUILD_TRIGGER_API_URL=$$BUILD_TRIGGER_API_URL
++     - SHARED_BUILD_STORAGE=$$SHARED_BUILD_STORAGE
     commands:
-     - python3 /scripts/images/publish.py
+     - python3 -u /scripts/images/publish.py
