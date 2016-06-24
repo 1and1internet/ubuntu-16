@@ -72,7 +72,6 @@ case ${1} in
       # Use exec so we replace our current process so signals can get through
       exec /bin/bash /init/supervisord
     else
-      echo "Something went wrong..."
       /bin/bash
     fi
     ;;
