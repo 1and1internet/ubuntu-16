@@ -1,5 +1,5 @@
 FROM ubuntu:xenial
-MAINTAINER james.wilkins@fasthosts.co.uk
+MAINTAINER james.wilkins@fasthosts.com
 ARG DEBIAN_FRONTEND=noninteractive
 COPY files/ /
 RUN \
