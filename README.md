@@ -2,7 +2,7 @@
 
 This repo contains images and configurations design to be run under Openshift Origin - www.openshift.org
 
-# Ubuntu 16 Base Image
+## Ubuntu 16 Base Image
 
 
 This image supports the following hooks:

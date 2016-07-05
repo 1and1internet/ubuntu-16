@@ -2,7 +2,7 @@ build:
   build:
     when:
       event: push
-    image: 1and1internet/template-library-tools
+    image: 1and1internet/template-library-tools:giraffe
     pull: true
     auth_config:
       username: $$DOCKERHUB_USERNAME
@@ -18,7 +18,8 @@ build:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - export IMAGE=dronebuild$DRONE_BUILD_NUMBER/${CI_REPO#*/}
+      - export IMAGE=dronejob$CI_JOB_ID/${CI_REPO#*/}
+      - echo $IMAGE
       - mkdir ../drone-tests ; git clone https://github.com/1and1internet/drone-tests.git ../drone-tests
       - pwd; ls -l; ls -l ..
       - rspec -f documentation spec/spec_helper.rb
@@ -26,7 +27,7 @@ build:
     when:
       branch: master
       event: push
-    image: 1and1internet/template-library-tools
+    image: 1and1internet/template-library-tools:giraffe
     auth_config:
      username: $$DOCKERHUB_USERNAME
      password: $$DOCKERHUB_PASSWORD
