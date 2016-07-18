@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo `id -u`:x:`id -u`:`id -g`:noone:/tmp:/sbin/nologin >> /etc/passwd

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 [ -z $SMTP_DOMAIN ] && SMTP_DOMAIN=localhost
 
@@ -12,4 +12,3 @@ AuthUser=${SMTP_USER}
 AuthPass=${SMTP_PASS}
 FROMLineOverride=yes
 EOF
-echo `id -u`:x:`id -u`:`id -g`:noone:/tmp:/sbin/nologin >> /etc/passwd
