@@ -7,7 +7,7 @@ RUN \
   apt-get -o Dpkg::Options::=--force-confdef -y install supervisor curl netcat wget telnet vim bzip2 ssmtp && \
   locale-gen en_GB.utf8 en_US.utf8 es_ES.utf8 de_DE.UTF-8 && \
   mkdir --mode 777 -p /var/log/supervisor && \
-  chmod -R 777 /var/run /var/log /etc/ssmtp /etc/passwd && \
+  chmod -R 777 /var/run /var/log /etc/ssmtp /etc/passwd /etc/group && \
   mkdir --mode 777 -p /tmp/sockets && \
   chmod -R 755 /init /hooks && \
   chmod 755 /etc/supervisor/exit_on_fatal.py && \
@@ -24,4 +24,3 @@ ENV \
   SMTP_RELAYHOST=""
 ENTRYPOINT ["/bin/bash", "-e", "/init/entrypoint"]
 CMD ["run"]
-
