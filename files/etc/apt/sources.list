@@ -12,5 +12,3 @@ deb  http://mirrorservice.org/sites/archive.ubuntu.com/ubuntu/ xenial-security u
 deb-src  http://mirrorservice.org/sites/archive.ubuntu.com/ubuntu/ xenial-security universe
 deb  http://mirrorservice.org/sites/archive.ubuntu.com/ubuntu/ xenial-security multiverse
 deb-src  http://mirrorservice.org/sites/archive.ubuntu.com/ubuntu/ xenial-security multiverse
-
-

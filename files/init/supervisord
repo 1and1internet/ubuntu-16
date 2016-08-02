@@ -26,6 +26,4 @@ fi
 [[ -f "/hooks/supervisord-pre" ]] && echo "The /hooks/supervisord-pre hook has been replaced with /hooks/supervisord-pre.d/*" && exit 1
 #[ -f "/hooks/supervisord-pre" ] && /hooks/supervisord-pre
 
-/usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf -e ${SUPERVISORD_LOGLEVEL:-error} & PID=$!
-
-wait
+exec /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf -e ${SUPERVISORD_LOGLEVEL:-error}
