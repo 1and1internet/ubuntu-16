@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY files/ /
 RUN \
   apt-get -y update && apt-get -y upgrade && \
-  apt-get -o Dpkg::Options::=--force-confdef -y install supervisor curl netcat wget telnet vim bzip2 ssmtp && \
+  apt-get -o Dpkg::Options::=--force-confdef -y install supervisor curl netcat wget telnet vim bzip2 ssmtp locales && \
   locale-gen en_GB.utf8 en_US.utf8 es_ES.utf8 de_DE.UTF-8 && \
   mkdir --mode 777 -p /var/log/supervisor && \
   chmod -R 777 /var/run /var/log /etc/ssmtp /etc/passwd /etc/group && \
