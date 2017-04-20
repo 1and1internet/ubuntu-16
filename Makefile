@@ -7,6 +7,9 @@ DOCKER_SOCKET = /var/run/docker.sock
 BUILD_ARGS = --rm
 RSPEC_ARGS = 
 
+# To use a locally modified copy of the tests repository set the TESTS_LOCAL variable to the absolute path of where it is located.
+TESTS_LOCAL =
+
 all: pull build test
 
 pull:
@@ -25,8 +28,15 @@ build:
 test:
 	##
 	## Starting tests inside a new container running ${RSPEC_IMAGE}
+ifdef TESTS_LOCAL
+	##  with tests from ${TESTS_LOCAL}
+	##
+	docker run --rm -i -t -v ${DOCKER_SOCKET}:/var/run/docker.sock -v ${PWD}/:/mnt/ -v ${TESTS_LOCAL}/:/drone-tests/ ${RSPEC_IMAGE} make run-rspec IMAGE_NAME=${IMAGE_NAME}
+else
+	##  with tests from ${TESTS_REPO}
 	##
 	docker run --rm -i -t -v ${DOCKER_SOCKET}:/var/run/docker.sock -v ${PWD}/:/mnt/ ${RSPEC_IMAGE} make do-test IMAGE_NAME=${IMAGE_NAME}
+endif
 
 do-test: checkout-drone-tests run-rspec
 

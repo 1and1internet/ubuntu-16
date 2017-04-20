@@ -40,4 +40,10 @@ You can also just `make pull`, `make build` and `make test` separately.
 
 Please see the top of the Makefile for various variables which you may choose to customise. Variables may be passed as arguments, e.g. `make IMAGE_NAME=bob` or `make build BUILD_ARGS="--rm --no-cache"`
 
+## Modifying the tests
 
+The tests depend on shared testing code found in its own git repository called [drone-tests](https://github.com/1and1internet/drone-tests).
+
+To use a different tests repository set the TESTS_REPO variable to the git URL for the alternative repository. e.g. `make TESTS_REPO=https://github.com/1and1internet/drone-tests.git`
+
+To use a locally modified copy of the tests repository set the TESTS_LOCAL variable to the absolute path of where it is located. This variable will override the TESTS_REPO variable. e.g. `make TESTS_LOCAL=/tmp/github/1and1internet/drone-tests/`
