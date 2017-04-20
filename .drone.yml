@@ -18,11 +18,7 @@ build:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - export IMAGE=dronejob$CI_JOB_ID/${CI_REPO#*/}
-      - echo $IMAGE
-      - mkdir ../drone-tests ; git clone https://github.com/1and1internet/drone-tests.git ../drone-tests
-      - pwd; ls -l; ls -l ..
-      - rspec -f documentation spec/spec_helper.rb
+      - make do-test IMAGE_NAME=dronejob$CI_JOB_ID/${CI_REPO#*/}
   publish:
     when:
       branch: master
