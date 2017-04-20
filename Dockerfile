@@ -1,5 +1,5 @@
 FROM ubuntu:xenial
-MAINTAINER james.wilkins@1and1.co.uk
+MAINTAINER brian.wojtczak@1and1.co.uk
 ARG DEBIAN_FRONTEND=noninteractive
 COPY files/ /
 RUN \
