@@ -1,49 +1,29 @@
-build:
+pipeline:
   build:
     when:
       event: push
-    image: 1and1internet/template-library-tools:giraffe
-    pull: true
-    auth_config:
-      username: $$DOCKERHUB_USERNAME
-      password: $$DOCKERHUB_PASSWORD
-      email: $$DOCKERHUB_EMAIL
+    image: 1and1internet/template-library-tools
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
       - python3 -u /scripts/images/build.py
+
   spectests:
-    image: 1and1internet/ubuntu-16-rspec:latest
-    pull: true
+    when:
+      event: push
+    image: 1and1internet/ubuntu-16-rspec
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - make do-test IMAGE_NAME=dronejob$CI_JOB_ID/${CI_REPO#*/}
+      - make do-test IMAGE_NAME=build-${CI_REPO#*/}-${CI_BUILD_NUMBER}/${CI_REPO#*/}
+
   publish:
     when:
-      branch: master
       event: push
-    image: 1and1internet/template-library-tools:giraffe
-    auth_config:
-     username: $$DOCKERHUB_USERNAME
-     password: $$DOCKERHUB_PASSWORD
-     email: $$DOCKERHUB_EMAIL
+    image: 1and1internet/template-library-tools
     volumes:
-     - /var/run/docker.sock:/var/run/docker.sock
-     - $$SHARED_BUILD_STORAGE:/tmp/image-comparison
-    environment:
-     - DOCKERHUB_USERNAME=$$DOCKERHUB_USERNAME
-     - DOCKERHUB_EMAIL=$$DOCKERHUB_EMAIL
-     - DOCKERHUB_PASSWORD=$$DOCKERHUB_PASSWORD
-     - DEPENDENCY_GRAPH_URL=$$DEPENDENCY_GRAPH_URL
-     - DEPENDENCY_GRAPH_USERNAME=$$DEPENDENCY_GRAPH_USERNAME
-     - DEPENDENCY_GRAPH_PASSWORD=$$DEPENDENCY_GRAPH_PASSWORD
-     - BUILD_TRIGGER_API_URL=$$BUILD_TRIGGER_API_URL
-     - BUILD_TRIGGER_API_USERNAME=$$BUILD_TRIGGER_API_USERNAME
-     - BUILD_TRIGGER_API_PASSWORD=$$BUILD_TRIGGER_API_PASSWORD
-     - TEMPLATE_UPDATER_URL=$$TEMPLATE_UPDATER_URL
-     - TEMPLATE_UPDATER_USERNAME=$$TEMPLATE_UPDATER_USERNAME
-     - TEMPLATE_UPDATER_PASSWORD=$$TEMPLATE_UPDATER_PASSWORD
-     - SHARED_BUILD_STORAGE=$$SHARED_BUILD_STORAGE
+      - /secrets:/secrets
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /shared_storage:/tmp/image-comparison
     commands:
      - python3 -u /scripts/images/publish.py
