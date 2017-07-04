@@ -72,7 +72,7 @@ case ${1} in
       # Use exec so we replace our current process so signals can get through
       exec /bin/bash /init/supervisord
     else
-      /bin/bash
+      exec /bin/bash
     fi
     ;;
   *)
