@@ -1,4 +1,15 @@
 pipeline:
+
+  pull:
+    when:
+      event: push
+    image: docker
+    volumes:
+      - /secrets:/secrets
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - docker --config /secrets/ pull 1and1internet/template-library-tools
+
   build:
     when:
       event: push
@@ -6,9 +17,9 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - python3 -u /scripts/images/build.py
+      - make build IMAGE_NAME=build-${CI_REPO#*/}-${CI_BUILD_NUMBER}/${CI_REPO#*/}
 
-  spectests:
+  test:
     when:
       event: push
     image: 1and1internet/ubuntu-16-rspec
@@ -27,3 +38,4 @@ pipeline:
       - /shared_storage:/tmp/image-comparison
     commands:
      - python3 -u /scripts/images/publish.py
+
