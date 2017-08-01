@@ -1,3 +1,4 @@
+---
 pipeline:
 
   pull:
@@ -5,10 +6,11 @@ pipeline:
       event: push
     image: docker
     volumes:
-      - /secrets:/secrets
       - /var/run/docker.sock:/var/run/docker.sock
+      - /secrets:/secrets
     commands:
       - docker --config /secrets/ pull 1and1internet/template-library-tools
+      - docker --config /secrets/ pull 1and1internet/ubuntu-16-rspec
 
   build:
     when:
@@ -17,7 +19,7 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - make build IMAGE_NAME=build-${CI_REPO#*/}-${CI_BUILD_NUMBER}/${CI_REPO#*/}
+      - make --environment-overrides build IMAGE_NAME=build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/}
 
   test:
     when:
@@ -26,16 +28,39 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - make do-test IMAGE_NAME=build-${CI_REPO#*/}-${CI_BUILD_NUMBER}/${CI_REPO#*/}
+      - make --environment-overrides do-test IMAGE_NAME=build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/}
 
   publish:
     when:
       event: push
     image: 1and1internet/template-library-tools
     volumes:
-      - /secrets:/secrets
       - /var/run/docker.sock:/var/run/docker.sock
-      - /shared_storage:/tmp/image-comparison
+      - /shared_storage:/shared_storage
+      - /secrets:/secrets
     commands:
-     - python3 -u /scripts/images/publish.py
+      - images_tool -s /secrets/ -w /shared_storage --image-name build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/} --publish-image
 
+  clean_workspace:
+    when:
+      event: push
+      status: [success, failure]
+    image: 1and1internet/template-library-tools
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /shared_storage:/shared_storage
+      - /secrets:/secrets
+    commands:
+      - images_tool -s /secrets/ -w /shared_storage --image-name build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/} --clean-workspace
+
+  clean_docker:
+    when:
+      event: push
+      status: [success, failure]
+    image: docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /secrets:/secrets
+    commands:
+      - docker rm -f $(docker ps -a | grep -v "$${HOSTNAME}" | awk '{print $1}') || true
+      - docker rmi -f $(docker images -q) || true
