@@ -16,6 +16,7 @@ from configurability import custom_files
 logger = logging.getLogger(__name__)
 
 
+# noinspection PyBroadException,PyUnboundLocalVariable
 def process(name, config, directory):
     """
     Requires the input file (configuration_file_name) in directory to
@@ -39,9 +40,31 @@ def process(name, config, directory):
             )
     logger.info('Configuring %s' % name)
 
-    current_values, file_format = custom_files.read_custom_file(config['ini_file_path'])
-    custom_values, file_format = custom_files.read_custom_file(
-        os.path.join(directory, config['configuration_file_name']))
+    error_occurred_while_reading_an_input_file = False
+
+    try:
+        current_values, file_format = custom_files.read_custom_file(
+            config['ini_file_path']
+        )
+    except Exception as file_reading_exception:
+        logger.error(str(file_reading_exception))  # don't log the full stack trace
+        error_occurred_while_reading_an_input_file = True
+
+    try:
+        custom_values, file_format = custom_files.read_custom_file(
+            os.path.join(directory, config['configuration_file_name'])
+        )
+    except Exception as file_reading_exception:
+        logger.error(str(file_reading_exception))  # don't log the full stack trace
+        error_occurred_while_reading_an_input_file = True
+
+    if error_occurred_while_reading_an_input_file:
+        logger.info('Not configuring %s (not a critical failure)' % name)
+        return  # abort but don't fail
+
+    assert custom_values is not None and isinstance(current_values, dict)
+    assert custom_values is not None and isinstance(custom_values, dict)
+
     resulting_file = ConfigParser.ConfigParser()
 
     for section_name in set(current_values.keys() + custom_values.keys()):
