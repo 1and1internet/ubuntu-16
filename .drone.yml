@@ -1,7 +1,7 @@
 ---
 pipeline:
 
-  pull:
+  pull_tools:
     when:
       event: push
     image: docker
@@ -11,6 +11,15 @@ pipeline:
     commands:
       - docker --config /secrets/ pull 1and1internet/template-library-tools
       - docker --config /secrets/ pull 1and1internet/ubuntu-16-rspec
+
+  pull_upstream:
+    when:
+      event: push
+    image: 1and1internet/template-library-tools
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - make --environment-overrides pull IMAGE_NAME=build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/}
 
   build:
     when:
