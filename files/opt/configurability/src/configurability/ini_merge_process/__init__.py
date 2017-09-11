@@ -36,7 +36,7 @@ def process(name, config, directory):
         if required_key not in config:
             raise Exception(
                 'Required key %s not present in %s section of internal configuration'
-                % (name, required_key)
+                % (required_key, name)
             )
     logger.info('Configuring %s' % name)
 
@@ -65,7 +65,7 @@ def process(name, config, directory):
     assert custom_values is not None and isinstance(current_values, dict)
     assert custom_values is not None and isinstance(custom_values, dict)
 
-    resulting_file = ConfigParser.ConfigParser()
+    resulting_file = ConfigParser.ConfigParser(allow_no_value=True)
 
     for section_name in set(current_values.keys() + custom_values.keys()):
         resulting_file.add_section(section_name)

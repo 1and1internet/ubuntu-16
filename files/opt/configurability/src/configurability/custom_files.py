@@ -31,7 +31,7 @@ def parse_file_as_ini(file_contents):
                 d[k].pop('__name__', None)
             return d
 
-    parser = ExtendedConfigParser()
+    parser = ExtendedConfigParser(allow_no_value=True)
     parser.read_string(file_contents)
     decoded_data = parser.as_dict()
     if len(decoded_data) == 0:
