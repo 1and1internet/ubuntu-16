@@ -45,10 +45,13 @@ def process_section(name, config, directory):
     :return:
     """
     processor = importlib.import_module(name=config['module'])
-    try:
-        config_translator = importlib.import_module('injectable.config')
-    except:
-        config_translator = None
+    config_translator = None
+    if 'config_translator_module' in config:
+        try:
+            config_translator = importlib.import_module(config['config_translator_module'])
+            logger.info("Using config translator '%s'" % config['config_translator_module'])
+        except:
+            logger.warn("Config translator '%s' was requested but not found" % config['config_translator_module'])
     processor.process(name, config, directory, config_translator)
 
 
