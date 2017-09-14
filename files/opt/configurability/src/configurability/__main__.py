@@ -45,7 +45,11 @@ def process_section(name, config, directory):
     :return:
     """
     processor = importlib.import_module(name=config['module'])
-    processor.process(name, config, directory)
+    try:
+        config_translator = importlib.import_module('injectable.config')
+    except:
+        config_translator = None
+    processor.process(name, config, directory, config_translator)
 
 
 def main():
