@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 # noinspection PyBroadException,PyUnboundLocalVariable
-def process(name, config, directory):
+def process(name, config, directory, config_translator):
     """
     Requires the input file (configuration_file_name) in directory to
      be multidimensional representation of overrides for the target file (ini_file_path).
@@ -36,7 +36,7 @@ def process(name, config, directory):
         if required_key not in config:
             raise Exception(
                 'Required key %s not present in %s section of internal configuration'
-                % (name, required_key)
+                % (required_key, name)
             )
     logger.info('Configuring %s' % name)
 
@@ -65,7 +65,7 @@ def process(name, config, directory):
     assert custom_values is not None and isinstance(current_values, dict)
     assert custom_values is not None and isinstance(custom_values, dict)
 
-    resulting_file = ConfigParser.ConfigParser()
+    resulting_file = ConfigParser.ConfigParser(allow_no_value=True)
 
     for section_name in set(current_values.keys() + custom_values.keys()):
         resulting_file.add_section(section_name)
@@ -83,6 +83,8 @@ def process(name, config, directory):
             logger.error('%s is not a valid section in custom values' % section_name)
             continue
         for key, value in custom_values[section_name].items():
+            if config_translator:
+                value = config_translator.process(key, value)
             display_values['%s/%s' % (section_name, key)] = value
             resulting_file.set(section_name, key, value)
     length = len(max(display_values.keys(), key=len))
