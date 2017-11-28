@@ -76,13 +76,14 @@ class TestUbuntu16(unittest.TestCase):
         )
 
         sv_log = self.execRun("ls -ld /var/log/supervisor")
+        print("SV_LOG: ", sv_log)
         self.assertFalse(
             sv_log.find("No such file or directory") > -1,
             msg="/var/log/supervisor is missing"
         )
-        self.assertTrue(
-            sv_log.find("rwx ") > -1,
-            msg="/var/log/supervisor permissions don't allow others to write"
+        self.assertEqual(
+            sv_log[8], 'w',
+            msg="/var/log/supervisor is not a writable by others"
         )
 
         self.assertFalse(
