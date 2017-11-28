@@ -10,7 +10,7 @@ pipeline:
       - /secrets:/secrets
     commands:
       - docker --config /secrets/ pull 1and1internet/template-library-tools
-      - docker --config /secrets/ pull 1and1internet/ubuntu-16-rspec
+      - docker --config /secrets/ pull 1and1internet/testpack-framework
 
   pull_upstream:
     when:
@@ -33,11 +33,12 @@ pipeline:
   test:
     when:
       event: push
-    image: 1and1internet/ubuntu-16-rspec
+    image: 1and1internet/testpack-framework
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - make --environment-overrides do-test IMAGE_NAME=build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/}
+      - export IMAGE_NAME=build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/}
+      - start_ci_tests
 
   publish:
     when:
