@@ -14,7 +14,7 @@ class TestUbuntu16(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        image_to_test = os.getenv("IMAGE_UNDER_TEST")
+        image_to_test = os.getenv("IMAGE_NAME")
         if image_to_test == "":
             raise Exception("I don't know what image to test")
         TestUbuntu16.docker_client = docker.from_env()

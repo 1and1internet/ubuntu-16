@@ -1,15 +1,9 @@
 PWD = $(shell pwd)
 IMAGE_NAME = $(shell basename ${PWD})
 BASE_IMAGE = $(shell grep Dockerfile -e FROM | cut -d ' ' -f 2)
-TESTS_REPO = https://github.com/1and1internet/drone-tests.git
 DOCKER_SOCKET = /var/run/docker.sock
 BUILD_ARGS = --rm
-RSPEC_ARGS =
-
 TPACK_IMAGE = 1and1internet/testpack-framework
-
-# To use a locally modified copy of the tests repository set the TESTS_LOCAL variable to the absolute path of where it is located.
-TESTS_LOCAL =
 
 all: pull build test
 
@@ -28,14 +22,14 @@ build:
 	docker build ${BUILD_ARGS} --tag ${IMAGE_NAME} .
 
 test:
-	docker run --rm -i -t -v ${DOCKER_SOCKET}:/var/run/docker.sock -v ${PWD}/:/mnt/ -v ${TESTS_LOCAL}/:/drone-tests/ -e IMAGE_UNDER_TEST=${IMAGE_NAME} ${TPACK_IMAGE}
+	docker run --rm -i -t -v ${DOCKER_SOCKET}:/var/run/docker.sock -v ${PWD}/:/mnt/ -v ${TESTS_LOCAL}/:/drone-tests/ -e IMAGE_NAME=${IMAGE_NAME} ${TPACK_IMAGE}
 
 clean:
 	##
 	## Removing docker images .. most errors during this stage are ok, ignore them
 	##
 	for IMAGE in ${BASE_IMAGE} ${TPACK_IMAGE}; \
-		do docker pull $${IMAGE}; \
+		do docker rmi $${IMAGE}; \
 	done
 
-.PHONY: all pull build test do-test checkout-drone-tests run-rspec clean
+.PHONY: all pull build test clean
