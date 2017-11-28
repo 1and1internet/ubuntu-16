@@ -76,7 +76,6 @@ class TestUbuntu16(unittest.TestCase):
         )
 
         sv_log = self.execRun("ls -ld /var/log/supervisor")
-        print("SV_LOG: ", sv_log)
         self.assertFalse(
             sv_log.find("No such file or directory") > -1,
             msg="/var/log/supervisor is missing"
