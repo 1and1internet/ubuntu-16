@@ -33,7 +33,13 @@ class TestUbuntu16(unittest.TestCase):
         self.container = TestUbuntu16.container
 
     def execRun(self, command):
-        return self.container.exec_run(command).decode('utf-8')
+        result = self.container.exec_run(command)
+        if isinstance(result, tuple):
+            exit_code = result[0]
+            output = result[1].decode('utf-8')
+        else:
+            output = result.decode('utf-8')
+        return output
 
     def assertPackageIsInstalled(self, packageName):
         op = self.execRun("dpkg -l %s" % packageName)
