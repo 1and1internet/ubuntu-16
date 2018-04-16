@@ -4,7 +4,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY files/ /
 RUN \
   apt-get -y update && apt-get -y upgrade && \
-  apt-get -o Dpkg::Options::=--force-confdef -y install supervisor curl netcat wget telnet vim bzip2 ssmtp locales python-pip && \
+  apt-get -o Dpkg::Options::=--force-confdef -y install supervisor curl netcat wget telnet vim bzip2 ssmtp locales python-setuptools && \
+  easy_install pip && \
   locale-gen en_GB.utf8 en_US.utf8 es_ES.utf8 de_DE.UTF-8 && \
   mkdir --mode 777 -p /var/log/supervisor && \
   chmod -R 777 /var/run /var/log /etc/ssmtp /etc/passwd /etc/group && \
@@ -12,7 +13,6 @@ RUN \
   chmod -R 755 /init /hooks && \
   chmod 755 /etc/supervisor/exit_on_fatal.py && \
   cd /opt/configurability/src/ && \
-  pip --no-cache install --upgrade pip && \
   pip --no-cache install --upgrade PyYAML && \
   pip --no-cache install --upgrade . && \
   apt-get -y clean && \
