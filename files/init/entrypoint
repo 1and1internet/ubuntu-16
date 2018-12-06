@@ -64,6 +64,9 @@ eval ${SETUP:-}
 #  fi
 #fi
 
+ulimit_core_re="^([0-9]+|unlimited)$"
+[[ $ULIMIT_CORE =~ $ulimit_core_re ]] && echo "Setting: ulimit -c '$ULIMIT_CORE'" && ulimit -c $ULIMIT_CORE
+
 case ${1} in
   run)
     check_depending_env
