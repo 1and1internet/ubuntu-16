@@ -1,5 +1,5 @@
 FROM ubuntu:xenial
-MAINTAINER brian.wilkinson@1and1.co.uk
+LABEL maintainer=brian.wilkinson@1and1.co.uk
 ARG DEBIAN_FRONTEND=noninteractive
 COPY files/ /
 RUN \
@@ -18,7 +18,9 @@ RUN \
     pip --no-cache install --upgrade PyYAML && \
     pip --no-cache install --upgrade . && \
   apt-get -y clean && \
-  rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/* && \
+  sed -i '/^root.*/d' /etc/shadow
+
 ENV \
   SUPERVISORD_EXIT_ON_FATAL=1 \
   LC_ALL=en_GB.UTF-8 \
