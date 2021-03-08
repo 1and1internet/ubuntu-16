@@ -11,7 +11,7 @@ RUN \
   mkdir --mode 777 -p /tmp/sockets && \
   chmod -R 755 /init /hooks && \
   chmod 755 /etc/supervisor/exit_on_fatal.py && \
-  curl https://bootstrap.pypa.io/2.7/get-pip.py -o /tmp/get-pip.py && \
+  curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o /tmp/get-pip.py && \
     python /tmp/get-pip.py && \
     update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip 100 && \
   cd /opt/configurability/src/ && \
